@@ -1,6 +1,7 @@
 'use strict';
 require('dotenv').config();
 const express     = require('express');
+const helmet     = require('helmet');
 const bodyParser  = require('body-parser');
 const cors        = require('cors');
 
@@ -16,6 +17,28 @@ app.use(cors({origin: '*'})); //For FCC testing purposes only
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+// Define the max age for HSTS
+const ninetyDaysInSeconds = 90 * 24 * 60 * 60;
+
+app.use(helmet({
+  frameguard: { action: 'deny' },
+  hsts: { maxAge: ninetyDaysInSeconds, force: true },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'"],
+    }
+  },
+  hidePoweredBy: true,
+  xssFilter: true,
+  noSniff: true,
+  ieNoOpen: true,
+  dnsPrefetchControl: true,
+  noCache: true
+}));
 
 //Index page (static HTML)
 app.route('/')
